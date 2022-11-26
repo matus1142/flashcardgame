@@ -1,0 +1,70 @@
+import 'package:flashcardgame/providers/FlashcardProvider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/container.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:provider/provider.dart';
+import '../models/Flashcards.dart';
+import  'package:flashcardgame/lib/Library.dart';
+
+class DictScreen extends StatefulWidget {
+  @override
+  State<DictScreen> createState() => _DictScreenState();
+}
+
+class _DictScreenState extends State<DictScreen> {
+  TextEditingController DictFieldController = TextEditingController();
+  TextEditingController MeanFieldController = TextEditingController();
+  @override
+
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Dict"),
+        actions: [
+          IconButton(
+              onPressed: (() async {
+                final text = await displayTextInputDialog(context);
+                print(text);
+              }),
+              icon: Icon(Icons.add)),
+              
+        ],
+      ),
+      body: Consumer(
+          //รับข้อมูลจาก Provider มาใช้ใน consumer
+          builder: (BuildContext context, FlashcardProvider provider,
+              Widget? child) {
+        var count = provider.flashcardlists.length;
+        return ListView.builder(
+            itemCount: count, //number card
+            itemBuilder: (context, int index) {
+              Flashcards data = provider.flashcardlists[index];
+              return Card(
+                elevation: 3, //เงาระหว่าง card
+                margin: const EdgeInsets.symmetric(
+                    vertical: 3, horizontal: 15), //ระยะหว่าง card
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                          title: Text("${data.dict} - ${data.mean}"),
+                          subtitle: Text("weight : ${data.weight}"),
+                          trailing: PopupMenuButton(itemBuilder: (context) {
+                            return [
+                              PopupMenuItem(
+                                child: Text("Delete"),
+                                value: 'Delete',
+                              )
+                            ];
+                          }, onSelected: (String value) {
+                            print("Delete ${data.dict}");
+                          })),
+                    ]),
+              );
+            });
+      }),
+    );
+  }
+
+  
+}
