@@ -13,15 +13,18 @@ class DictScreen extends StatefulWidget {
 }
 
 class _DictScreenState extends State<DictScreen> {
+  TextEditingController SearchFieldController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Dict"),
         actions: [
-            IconButton(
+          IconButton(
               onPressed: (() async {
-                Fluttertoast.showToast(msg: "Upload",gravity: ToastGravity.CENTER);
+                Fluttertoast.showToast(
+                    msg: "Upload", gravity: ToastGravity.CENTER);
                 print("Upload");
               }),
               icon: Icon(Icons.keyboard_double_arrow_up_rounded)),
@@ -39,9 +42,31 @@ class _DictScreenState extends State<DictScreen> {
               Widget? child) {
         var count = provider.flashcardlists.length;
         return ListView.builder(
-            itemCount: count, //number card
-            itemBuilder: (context, int index) {
+            itemCount:
+                count + 1, //number card, offset 1 for Add Button Upload CSV
+            itemBuilder: (context, int counter) {
+              int index = 0;
+              if (counter == 0) {
+                return Container(
+                  margin: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                  height: 30,
+                  decoration: BoxDecoration(),
+                  child: TextField(
+                    controller: SearchFieldController,
+                    decoration: InputDecoration(hintText: "Search"),
+                    onChanged: (value){
+                      print(value);
+
+                      //Add search function here
+
+                    },
+                  ),
+                );
+              } else {
+                index = counter - 1;
+              }
               Flashcards data = provider.flashcardlists[index];
+
               return Card(
                 elevation: 3, //เงาระหว่าง card
                 margin: const EdgeInsets.symmetric(
@@ -65,12 +90,12 @@ class _DictScreenState extends State<DictScreen> {
                             ];
                           }, onSelected: (String value) async {
                             if (value == 'Edit') {
-                                print("Edit ${data.dict}");
-                                await EditVocabDialog(context,index);
-                                //provider.Editflashcardlists(index);
+                              print("Edit ${data.dict}");
+                              await EditVocabDialog(context, index);
+                              //provider.Editflashcardlists(index);
                             } else if (value == 'Delete') {
-                                print("Delete ${data.dict}");
-                                await provider.delflashcardlists(index);
+                              print("Delete ${data.dict}");
+                              await provider.delflashcardlists(index);
                             }
                           })),
                     ]),
