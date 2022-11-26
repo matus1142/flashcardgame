@@ -1,9 +1,13 @@
+import 'package:csv/csv.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/Flashcards.dart';
 import '../providers/FlashcardProvider.dart';
+import 'dart:convert';
+import 'dart:io';
 
-Future<String?> displayTextInputDialog(BuildContext context) {
+Future<String?> AddVocabDialog(BuildContext context) {
   TextEditingController DictFieldController = TextEditingController();
   TextEditingController MeanFieldController = TextEditingController();
   return showDialog<String>(
@@ -14,15 +18,18 @@ Future<String?> displayTextInputDialog(BuildContext context) {
           content: Container(
             height: 100,
             width: 10,
-            child: SingleChildScrollView( //ป้องกัน button overflow
+            child: SingleChildScrollView(
+              //ป้องกัน button overflow
               child: Column(
                 children: [
-                  TextField( //Add Vocab
+                  TextField(
+                    //Add Vocab
                     onChanged: (value) {},
                     controller: DictFieldController,
                     decoration: InputDecoration(hintText: "Dict"),
                   ),
-                  TextField(//Add meaning
+                  TextField(
+                    //Add meaning
                     onChanged: (value) {},
                     controller: MeanFieldController,
                     decoration: InputDecoration(hintText: "Mean"),
@@ -42,8 +49,7 @@ Future<String?> displayTextInputDialog(BuildContext context) {
             ),
             TextButton(
               style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.green),
+                  foregroundColor: Colors.white, backgroundColor: Colors.green),
               child: Text("OK"),
               onPressed: () {
                 var dictText = DictFieldController.value.text;
@@ -56,7 +62,8 @@ Future<String?> displayTextInputDialog(BuildContext context) {
                     date: DateTime.now());
                 var provider =
                     Provider.of<FlashcardProvider>(context, listen: false);
-                if ((dictText != "") && (meanText != "")) {//Check emptry
+                if ((dictText != "") && (meanText != "")) {
+                  //Check emptry
                   provider.addflashcardlists(vocablist);
                 }
                 Navigator.pop(context);
@@ -67,8 +74,7 @@ Future<String?> displayTextInputDialog(BuildContext context) {
       });
 }
 
-
-Future<void> EditVocabDialog(BuildContext context,int index) {
+Future<void> EditVocabDialog(BuildContext context, int index) {
   TextEditingController DictFieldController = TextEditingController();
   TextEditingController MeanFieldController = TextEditingController();
   return showDialog<String>(
@@ -79,15 +85,18 @@ Future<void> EditVocabDialog(BuildContext context,int index) {
           content: Container(
             height: 100,
             width: 10,
-            child: SingleChildScrollView( //ป้องกัน button overflow
+            child: SingleChildScrollView(
+              //ป้องกัน button overflow
               child: Column(
                 children: [
-                  TextField( //Add Vocab
+                  TextField(
+                    //Add Vocab
                     onChanged: (value) {},
                     controller: DictFieldController,
                     decoration: InputDecoration(hintText: "Dict"),
                   ),
-                  TextField(//Add meaning
+                  TextField(
+                    //Add meaning
                     onChanged: (value) {},
                     controller: MeanFieldController,
                     decoration: InputDecoration(hintText: "Mean"),
@@ -107,8 +116,7 @@ Future<void> EditVocabDialog(BuildContext context,int index) {
             ),
             TextButton(
               style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.green),
+                  foregroundColor: Colors.white, backgroundColor: Colors.green),
               child: Text("OK"),
               onPressed: () {
                 var dictText = DictFieldController.value.text;
@@ -121,8 +129,9 @@ Future<void> EditVocabDialog(BuildContext context,int index) {
                     date: DateTime.now());
                 var provider =
                     Provider.of<FlashcardProvider>(context, listen: false);
-                if ((dictText != "") && (meanText != "")) {//Check emptry
-                  provider.Editflashcardlists(vocablist,index);
+                if ((dictText != "") && (meanText != "")) {
+                  //Check emptry
+                  provider.Editflashcardlists(vocablist, index);
                 }
                 Navigator.pop(context);
               },
@@ -130,4 +139,30 @@ Future<void> EditVocabDialog(BuildContext context,int index) {
           ],
         );
       });
+}
+
+Future<List> pickFile() async {
+  List _data = [];
+  String? filePath;
+  final result = await FilePicker.platform.pickFiles(allowMultiple: false);
+
+  // if no file is picked
+  if (result == null) {
+    return _data;
+  } else {
+    // we will log the name, size and path of the
+    // first picked file (if multiple are selected)
+    print(result.files.first.name);
+    filePath = result.files.first.path!;
+
+    final input = File(filePath!).openRead();
+    final fields = await input
+        .transform(utf8.decoder)
+        .transform(const CsvToListConverter())
+        .toList();
+    print(fields);
+
+    _data = fields;
+    return _data;
+  }
 }
