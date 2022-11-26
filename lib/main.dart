@@ -28,7 +28,6 @@ void main() async{
   // final sheet = ss.worksheetByTitle('Test1');
 
   //await sheet!.values.insertValue('B',column: 2,row: 1);
-  print("a");
   runApp(MyApp());
 }
 
@@ -47,7 +46,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
           title: 'Flutter Demo',
           theme: ThemeData(
-            primarySwatch: Colors.green,
+            primarySwatch: Colors.pink,
           ),
           home: DictScreen()),
     );

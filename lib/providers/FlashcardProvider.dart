@@ -28,4 +28,19 @@ class FlashcardProvider with ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future delflashcardlists(int index) async {
+    flashcardlists.removeAt(index);
+    notifyListeners();
+  }
+
+  Future Editflashcardlists(Flashcards vocablist,int index) async {
+    flashcardlists[index] = Flashcards(
+        deck: vocablist.deck,
+        dict: vocablist.dict,
+        mean: vocablist.mean,
+        weight: vocablist.weight,
+        date: vocablist.date);
+    notifyListeners();
+  }
 }

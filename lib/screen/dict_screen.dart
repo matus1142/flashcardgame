@@ -2,9 +2,10 @@ import 'package:flashcardgame/providers/FlashcardProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import '../models/Flashcards.dart';
-import  'package:flashcardgame/lib/Library.dart';
+import 'package:flashcardgame/lib/Library.dart';
 
 class DictScreen extends StatefulWidget {
   @override
@@ -12,22 +13,24 @@ class DictScreen extends StatefulWidget {
 }
 
 class _DictScreenState extends State<DictScreen> {
-  TextEditingController DictFieldController = TextEditingController();
-  TextEditingController MeanFieldController = TextEditingController();
   @override
-
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Dict"),
         actions: [
+            IconButton(
+              onPressed: (() async {
+                Fluttertoast.showToast(msg: "Upload",gravity: ToastGravity.CENTER);
+                print("Upload");
+              }),
+              icon: Icon(Icons.keyboard_double_arrow_up_rounded)),
           IconButton(
               onPressed: (() async {
                 final text = await displayTextInputDialog(context);
-                print(text);
+                //print(text);
               }),
               icon: Icon(Icons.add)),
-              
         ],
       ),
       body: Consumer(
@@ -52,12 +55,23 @@ class _DictScreenState extends State<DictScreen> {
                           trailing: PopupMenuButton(itemBuilder: (context) {
                             return [
                               PopupMenuItem(
+                                child: Text("Edit"),
+                                value: 'Edit',
+                              ),
+                              PopupMenuItem(
                                 child: Text("Delete"),
                                 value: 'Delete',
                               )
                             ];
-                          }, onSelected: (String value) {
-                            print("Delete ${data.dict}");
+                          }, onSelected: (String value) async {
+                            if (value == 'Edit') {
+                                print("Edit ${data.dict}");
+                                await EditVocabDialog(context,index);
+                                //provider.Editflashcardlists(index);
+                            } else if (value == 'Delete') {
+                                print("Delete ${data.dict}");
+                                await provider.delflashcardlists(index);
+                            }
                           })),
                     ]),
               );
@@ -65,6 +79,4 @@ class _DictScreenState extends State<DictScreen> {
       }),
     );
   }
-
-  
 }
