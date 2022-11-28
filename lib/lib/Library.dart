@@ -166,3 +166,116 @@ Future<List> pickFile() async {
     return _data;
   }
 }
+
+Future<String?> AddDeckDialog(BuildContext context) {
+  TextEditingController DeckFieldController = TextEditingController();
+  return showDialog<String>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Add Deck'),
+          content: Container(
+            height: 60,
+            width: 10,
+            child: SingleChildScrollView(
+              //ป้องกัน button overflow
+              child: Column(
+                children: [
+                  TextField(
+                    //Add Vocab
+                    onChanged: (value) {},
+                    controller: DeckFieldController,
+                    decoration: InputDecoration(hintText: "Deck"),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              style: TextButton.styleFrom(
+                  foregroundColor: Colors.white, backgroundColor: Colors.red),
+              child: Text("CANCEL"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                  foregroundColor: Colors.white, backgroundColor: Colors.green),
+              child: Text("OK"),
+              onPressed: () {
+                var DeckText = DeckFieldController.value.text;
+
+                Deckcards decklist = Deckcards(
+                    deck: DeckText,
+                    date: DateTime.now());
+                var provider =
+                    Provider.of<FlashcardProvider>(context, listen: false);
+                if (DeckText != "") {
+                  //Check emptry
+                  provider.addDeckcardlists(decklist);
+                }
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+      });
+}
+
+Future<void> EditDeckDialog(BuildContext context, int index) {
+  TextEditingController DeckFieldController = TextEditingController();
+  return showDialog<String>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Edit Deck'),
+          content: Container(
+            height: 60,
+            width: 10,
+            child: SingleChildScrollView(
+              //ป้องกัน button overflow
+              child: Column(
+                children: [
+                  TextField(
+                    //Add Vocab
+                    onChanged: (value) {},
+                    controller: DeckFieldController,
+                    decoration: InputDecoration(hintText: "Deck"),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              style: TextButton.styleFrom(
+                  foregroundColor: Colors.white, backgroundColor: Colors.red),
+              child: Text("CANCEL"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                  foregroundColor: Colors.white, backgroundColor: Colors.green),
+              child: Text("OK"),
+              onPressed: () {
+                var deckText = DeckFieldController.value.text;
+                Deckcards decklist = Deckcards(
+                    deck: deckText,
+                    date: DateTime.now());
+                var provider =
+                    Provider.of<FlashcardProvider>(context, listen: false);
+                if (deckText != "") {
+                  //Check emptry
+                  provider.Editdeckcardlists(decklist, index);
+                }
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+      });
+}

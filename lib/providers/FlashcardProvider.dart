@@ -34,7 +34,7 @@ class FlashcardProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future Editflashcardlists(Flashcards vocablist,int index) async {
+  Future Editflashcardlists(Flashcards vocablist, int index) async {
     flashcardlists[index] = Flashcards(
         deck: vocablist.deck,
         dict: vocablist.dict,
@@ -43,4 +43,27 @@ class FlashcardProvider with ChangeNotifier {
         date: vocablist.date);
     notifyListeners();
   }
+
+  List<Deckcards> deckcardlists = [
+    Deckcards(deck: "JPN/TH", date: DateTime.now()),
+  ];
+
+  addDeckcardlists(Deckcards decklist) {
+    deckcardlists.add(decklist);
+
+    notifyListeners();
+  }
+
+  Future delDeckcardlists(int index) async {
+    deckcardlists.removeAt(index);
+    notifyListeners();
+  }
+
+    Future Editdeckcardlists(Deckcards decklist, int index) async {
+    deckcardlists[index] = Deckcards(
+        deck: decklist.deck,
+        date: decklist.date);
+    notifyListeners();
+  }
+
 }

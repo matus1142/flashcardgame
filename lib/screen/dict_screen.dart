@@ -8,6 +8,12 @@ import '../models/Flashcards.dart';
 import 'package:flashcardgame/lib/Library.dart';
 
 class DictScreen extends StatefulWidget {
+  final String dack2dict;
+
+  const DictScreen({
+    required this.dack2dict,
+  }) ;
+
   @override
   State<DictScreen> createState() => _DictScreenState();
 }
@@ -19,7 +25,7 @@ class _DictScreenState extends State<DictScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Dict"),
+        title: Text("Dict: ${widget.dack2dict}"),
         actions: [
           IconButton(
               onPressed: (() async {

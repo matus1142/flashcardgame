@@ -1,4 +1,5 @@
 import 'package:flashcardgame/providers/FlashcardProvider.dart';
+import 'package:flashcardgame/screen/deck_screen.dart';
 import 'package:flashcardgame/screen/dict_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:gsheets/gsheets.dart';
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.pink,
           ),
-          home: DictScreen()),
+          home: DeckScreen()),
     );
   }
 }
