@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import '../models/Flashcards.dart';
 import 'package:flashcardgame/lib/Library.dart';
+import 'package:intl/intl.dart';
 
 class DictScreen extends StatefulWidget {
   final String deck2dict;
@@ -19,6 +20,14 @@ class DictScreen extends StatefulWidget {
 }
 
 class _DictScreenState extends State<DictScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Provider.of<FlashcardProvider>(context,listen: false).initVocabData(widget.deck2dict);
+  }
+
+
   TextEditingController SearchFieldController = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -47,9 +56,6 @@ class _DictScreenState extends State<DictScreen> {
               Widget? child) {
         var count = provider.flashcardlists.length;
 
-                // if (data.deck != widget.deck2dict) {
-                //   return const SizedBox(width: 0);
-                // } 
         return ListView.builder(
             itemCount:
                 count + 1, //number card, offset 1 for Add Button Upload CSV
@@ -89,7 +95,7 @@ class _DictScreenState extends State<DictScreen> {
                             ),
                             title: Text(
                                 "${data.deck} : ${data.dict} - ${data.mean}"),
-                            subtitle: Text("weight : ${data.weight}"),
+                            subtitle: Text("weight : ${data.weight}  date: ${DateFormat("yyyy/MM/dd").format(data.date)}"),
                             trailing: PopupMenuButton(itemBuilder: (context) {
                               return [
                                 PopupMenuItem(
@@ -106,7 +112,6 @@ class _DictScreenState extends State<DictScreen> {
                                 print("Edit ${data.dict}");
                                 await EditVocabDialog(context, widget.deck2dict,
                                     data.weight, index);
-                                //provider.Editflashcardlists(index);
                               } else if (value == 'Delete') {
                                 print("Delete ${data.dict}");
                                 await provider.delflashcardlists(index);

@@ -17,6 +17,13 @@ class DeckScreen extends StatefulWidget {
 }
 
 class _DeckScreenState extends State<DeckScreen> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // Provider.of<FlashcardProvider>(context,listen: false).initVocabData();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
