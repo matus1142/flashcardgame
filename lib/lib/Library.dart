@@ -7,7 +7,7 @@ import '../providers/FlashcardProvider.dart';
 import 'dart:convert';
 import 'dart:io';
 
-Future<String?> AddVocabDialog(BuildContext context) {
+Future<String?> AddVocabDialog(BuildContext context,String deck2dict) {
   TextEditingController DictFieldController = TextEditingController();
   TextEditingController MeanFieldController = TextEditingController();
   return showDialog<String>(
@@ -55,7 +55,7 @@ Future<String?> AddVocabDialog(BuildContext context) {
                 var dictText = DictFieldController.value.text;
                 var meanText = MeanFieldController.text;
                 Flashcards vocablist = Flashcards(
-                    deck: "JPN/TH",
+                    deck: deck2dict,
                     dict: dictText,
                     mean: meanText,
                     weight: 1,
@@ -74,7 +74,7 @@ Future<String?> AddVocabDialog(BuildContext context) {
       });
 }
 
-Future<void> EditVocabDialog(BuildContext context, int index) {
+Future<void> EditVocabDialog(BuildContext context,String deck2dict, int weight, int index) {
   TextEditingController DictFieldController = TextEditingController();
   TextEditingController MeanFieldController = TextEditingController();
   return showDialog<String>(
@@ -122,10 +122,10 @@ Future<void> EditVocabDialog(BuildContext context, int index) {
                 var dictText = DictFieldController.value.text;
                 var meanText = MeanFieldController.text;
                 Flashcards vocablist = Flashcards(
-                    deck: "JPN/TH",
+                    deck: deck2dict,
                     dict: dictText,
                     mean: meanText,
-                    weight: 1,
+                    weight: weight,
                     date: DateTime.now());
                 var provider =
                     Provider.of<FlashcardProvider>(context, listen: false);
@@ -155,7 +155,7 @@ Future<List> pickFile() async {
     print(result.files.first.name);
     filePath = result.files.first.path!;
 
-    final input = File(filePath!).openRead();
+    final input = File(filePath).openRead();
     final fields = await input
         .transform(utf8.decoder)
         .transform(const CsvToListConverter())

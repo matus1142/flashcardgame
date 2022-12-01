@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 import '../providers/FlashcardProvider.dart';
 
 class DeckScreen extends StatefulWidget {
-  final String dack2dict ='';
+  final String deck2dict ='';
 
   @override
   State<DeckScreen> createState() => _DeckScreenState();
@@ -62,7 +62,7 @@ class _DeckScreenState extends State<DeckScreen> {
                         Navigator.push(
                       context,
                       MaterialPageRoute(builder: ((context) {
-                        return DictScreen(dack2dict:deckcards.deck);
+                        return DictScreen(deck2dict:deckcards.deck);
                       })),
                     );
                       },
