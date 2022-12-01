@@ -28,22 +28,7 @@ class _DictScreenState extends State<DictScreen> {
         actions: [
           IconButton(
               onPressed: (() async {
-                List CSVdata = await pickFile();
-                var provider =
-                    Provider.of<FlashcardProvider>(context, listen: false);
-
-                for (int i = 1; i < CSVdata.length; i++) {
-                  Flashcards vocablist = Flashcards(
-                      deck: CSVdata[i][0],
-                      dict: CSVdata[i][1],
-                      mean: CSVdata[i][2],
-                      weight: CSVdata[i][3],
-                      date: DateTime.now());
-                  if ((CSVdata[i][0] != "") && (CSVdata[i][1] != "")) {
-                    //Check emptry
-                    provider.addflashcardlists(vocablist);
-                  }
-                }
+                await ImportCSVData(context);
                 Fluttertoast.showToast(
                     msg: "Import Complete", gravity: ToastGravity.CENTER);
               }),

@@ -7,7 +7,7 @@ import '../providers/FlashcardProvider.dart';
 import 'dart:convert';
 import 'dart:io';
 
-Future<String?> AddVocabDialog(BuildContext context,String deck2dict) {
+Future<String?> AddVocabDialog(BuildContext context, String deck2dict) {
   TextEditingController DictFieldController = TextEditingController();
   TextEditingController MeanFieldController = TextEditingController();
   return showDialog<String>(
@@ -74,7 +74,8 @@ Future<String?> AddVocabDialog(BuildContext context,String deck2dict) {
       });
 }
 
-Future<void> EditVocabDialog(BuildContext context,String deck2dict, int weight, int index) {
+Future<void> EditVocabDialog(
+    BuildContext context, String deck2dict, int weight, int index) {
   TextEditingController DictFieldController = TextEditingController();
   TextEditingController MeanFieldController = TextEditingController();
   return showDialog<String>(
@@ -207,9 +208,8 @@ Future<String?> AddDeckDialog(BuildContext context) {
               onPressed: () {
                 var DeckText = DeckFieldController.value.text;
 
-                Deckcards decklist = Deckcards(
-                    deck: DeckText,
-                    date: DateTime.now());
+                Deckcards decklist =
+                    Deckcards(deck: DeckText, date: DateTime.now());
                 var provider =
                     Provider.of<FlashcardProvider>(context, listen: false);
                 if (DeckText != "") {
@@ -263,9 +263,8 @@ Future<void> EditDeckDialog(BuildContext context, int index) {
               child: Text("OK"),
               onPressed: () {
                 var deckText = DeckFieldController.value.text;
-                Deckcards decklist = Deckcards(
-                    deck: deckText,
-                    date: DateTime.now());
+                Deckcards decklist =
+                    Deckcards(deck: deckText, date: DateTime.now());
                 var provider =
                     Provider.of<FlashcardProvider>(context, listen: false);
                 if (deckText != "") {
@@ -278,4 +277,22 @@ Future<void> EditDeckDialog(BuildContext context, int index) {
           ],
         );
       });
+}
+
+Future<void> ImportCSVData(BuildContext context) async {
+  List CSVdata = await pickFile();
+  var provider = Provider.of<FlashcardProvider>(context, listen: false);
+
+  for (int i = 1; i < CSVdata.length; i++) {
+    Flashcards vocablist = Flashcards(
+        deck: CSVdata[i][0],
+        dict: CSVdata[i][1],
+        mean: CSVdata[i][2],
+        weight: CSVdata[i][3],
+        date: DateTime.now());
+    if ((CSVdata[i][0] != "") && (CSVdata[i][1] != "")) {
+      //Check emptry
+      provider.addflashcardlists(vocablist);
+    }
+  }
 }
