@@ -1,6 +1,7 @@
 import 'package:csv/csv.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import '../models/Flashcards.dart';
 import '../providers/FlashcardProvider.dart';
@@ -75,7 +76,7 @@ Future<String?> AddVocabDialog(BuildContext context, String deck2dict) {
 }
 
 Future<void> EditVocabDialog(
-    BuildContext context, String deck2dict, int weight, int index) {
+    BuildContext context, String deck2dict, Flashcards oldVocab) {
   TextEditingController DictFieldController = TextEditingController();
   TextEditingController MeanFieldController = TextEditingController();
   return showDialog<String>(
@@ -126,13 +127,13 @@ Future<void> EditVocabDialog(
                     deck: deck2dict,
                     dict: dictText,
                     mean: meanText,
-                    weight: weight,
+                    weight: oldVocab.weight,
                     date: DateTime.now());
                 var provider =
                     Provider.of<FlashcardProvider>(context, listen: false);
                 if ((dictText != "") && (meanText != "")) {
                   //Check emptry
-                  provider.Editflashcardlists(vocablist, index);
+                  provider.Editflashcardlists(oldVocab, vocablist);
                 }
                 Navigator.pop(context);
               },
@@ -279,6 +280,41 @@ Future<void> EditDeckDialog(BuildContext context, int index) {
       });
 }
 
+Future<void> DeleteAllVocabDialog(BuildContext context, String deck) {
+  return showDialog<String>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+            title: Center(child: Text('Delete All Vocabulary')),
+            actions: [
+              TextButton(
+                style: TextButton.styleFrom(
+                    foregroundColor: Colors.white, backgroundColor: Colors.red),
+                child: Text("CANCEL"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.green),
+                child: Text("OK"),
+                onPressed: () async {
+                  var provider =
+                      Provider.of<FlashcardProvider>(context, listen: false);
+                  await provider.delAllflashcardlists(deck).then((value) {
+                    Navigator.pop(context);
+                  });
+                  Fluttertoast.showToast(
+                      msg: "Delete All Complete", gravity: ToastGravity.CENTER);
+                },
+              )
+            ],
+            actionsAlignment: MainAxisAlignment.center);
+      });
+}
+
 Future<void> ImportCSVData(BuildContext context) async {
   List CSVdata = await pickFile();
   var provider = Provider.of<FlashcardProvider>(context, listen: false);
@@ -292,7 +328,7 @@ Future<void> ImportCSVData(BuildContext context) async {
         date: DateTime.now());
     if ((CSVdata[i][0] != "") && (CSVdata[i][1] != "")) {
       //Check emptry
-      provider.addflashcardlists(vocablist);
+      await provider.addflashcardlists(vocablist);
     }
   }
 }

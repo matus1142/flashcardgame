@@ -10,7 +10,7 @@ class FlashcardProvider with ChangeNotifier {
     return flashcardlists;
   }
 
-  void initVocabData(String deck) async {
+  Future<void> initVocabData(String deck) async {
     var vocabdb = await FlashVocabDB(VocabdbName: "vocablist.db");
 
     List<Flashcards> allDataList = [];
@@ -30,27 +30,33 @@ class FlashcardProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void addflashcardlists(Flashcards vocablist) async {
+  Future<void> addflashcardlists(Flashcards vocablist) async {
     var vocabdb = await FlashVocabDB(VocabdbName: "vocablist.db");
     //↑ /data/user/0/com.example.flashcardgame/app_flutter/vocablist.db
     await vocabdb.InsertData(vocablist);
-    initVocabData(vocablist.deck);
+    await initVocabData(vocablist.deck);
     // flashcardlists = await vocabdb.loadAllData();
     notifyListeners();
   }
 
-  Future delflashcardlists(int index) async {
-    flashcardlists.removeAt(index);
+  Future delflashcardlists(Flashcards vocablist) async {
+    var vocabdb = await FlashVocabDB(VocabdbName: "vocablist.db");
+    await vocabdb.DeleteData(vocablist);
+    await initVocabData(vocablist.deck);
     notifyListeners();
   }
 
-  Future Editflashcardlists(Flashcards vocablist, int index) async {
-    flashcardlists[index] = Flashcards(
-        deck: vocablist.deck,
-        dict: vocablist.dict,
-        mean: vocablist.mean,
-        weight: vocablist.weight,
-        date: vocablist.date);
+  Future delAllflashcardlists(String deck) async {
+    var vocabdb = await FlashVocabDB(VocabdbName: "vocablist.db");
+    await vocabdb.DeleteAllData(deck);
+    await initVocabData(deck);
+    notifyListeners();
+  }
+
+  Future Editflashcardlists(Flashcards oldVocab, Flashcards newVocab) async {
+    var vocabdb = await FlashVocabDB(VocabdbName: "vocablist.db");
+    await vocabdb.EditData(oldVocab, newVocab);
+    await initVocabData(newVocab.deck);
     notifyListeners();
   }
 
@@ -65,7 +71,7 @@ class FlashcardProvider with ChangeNotifier {
     ),
   ];
 
-  addDeckcardlists(Deckcards decklist) async {
+  Future addDeckcardlists(Deckcards decklist) async {
     deckcardlists.add(decklist);
     var deckdb = await FlashDeckDB(DeckdbName: "decklist.db")
         .openDatabase(); //path: /data/user/0/com.example.flashcardgame/app_flutter/decklist.db

@@ -8,6 +8,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 
+///*************************************************** Vocab ******************************************************************///
+
 class FlashVocabDB {
   String? VocabdbName;
 
@@ -50,38 +52,68 @@ class FlashVocabDB {
     var snapshot = await store.find(db);
     List<Flashcards> Vocablist = List<Flashcards>.from(<List<Flashcards>>[]);
     var record;
-    for(record in snapshot){
-      Vocablist.add(
-        Flashcards(
-          deck: record["deck"], 
-          dict: record["dict"], 
-          mean: record["mean"], 
-          weight: record["weight"], 
-          date: DateTime.parse(record["date"])
-          )
-      );
+    for (record in snapshot) {
+      Vocablist.add(Flashcards(
+          deck: record["deck"],
+          dict: record["dict"],
+          mean: record["mean"],
+          weight: record["weight"],
+          date: DateTime.parse(record["date"])));
     }
     return Vocablist;
   }
 
-  // Future DeleteData(String title, double amount, DateTime date) async {
-  //   //database => Store
-  //   var db = await this.openDatabase();
-  //   var store = intMapStoreFactory
-  //       .store("expense"); //create storeName "expense" in transcation.db
-  //   var findkey = await store.findKey(db,
-  //       finder: Finder(
-  //           filter: Filter.and([
-  //         Filter.equals('title', title),
-  //         Filter.equals('amount', amount),
-  //         Filter.equals('date', date.toIso8601String())
-  //       ])));
-  //   var record = await store.record(findkey!);
-  //   await record.delete(db);
-  //   // await store.delete(db);
-  //   db.close();
-  // }
+  Future DeleteData(Flashcards vocablist) async {
+    //database => Store
+    var db = await this.openDatabase();
+    var store = intMapStoreFactory.store("vocabulary");
+    var findkey = await store.findKey(db,
+        finder: Finder(
+            filter: Filter.and([
+          Filter.equals('deck', vocablist.deck),
+          Filter.equals('dict', vocablist.dict),
+          Filter.equals('mean', vocablist.mean),
+          Filter.equals('date', vocablist.date.toIso8601String())
+        ])));
+    var record = await store.record(findkey!);
+    await record.delete(db);
+    // await store.delete(db);
+    db.close();
+  }
+
+  Future DeleteAllData(String deck) async {
+    //database => Store
+    var db = await this.openDatabase();
+    var store = intMapStoreFactory.store("vocabulary");
+    await store.delete(db, finder: Finder(filter: Filter.equals('deck', deck)));
+    // await store.delete(db);
+    db.close();
+  }
+
+  Future EditData(Flashcards oldVocab, Flashcards newVocab) async {
+    //database => Store
+    var db = await this.openDatabase();
+    var store = intMapStoreFactory.store("vocabulary");
+    var findkey = await store.findKey(db,
+        finder: Finder(
+            filter: Filter.and([
+          Filter.equals('deck', oldVocab.deck),
+          Filter.equals('dict', oldVocab.dict),
+          Filter.equals('mean', oldVocab.mean),
+          Filter.equals('date', oldVocab.date.toIso8601String())
+        ])));
+    var record = await store.record(findkey!);
+    await record.update(db, {
+      'dict': newVocab.dict,
+      'mean': newVocab.mean,
+      'date': newVocab.date.toIso8601String()
+    });
+    // await store.delete(db);
+    db.close();
+  }
 }
+
+///*************************************************** Deck ******************************************************************///
 
 class FlashDeckDB {
   String? DeckdbName;

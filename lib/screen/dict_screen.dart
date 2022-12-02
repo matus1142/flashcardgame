@@ -24,9 +24,9 @@ class _DictScreenState extends State<DictScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<FlashcardProvider>(context,listen: false).initVocabData(widget.deck2dict);
+    Provider.of<FlashcardProvider>(context, listen: false)
+        .initVocabData(widget.deck2dict);
   }
-
 
   TextEditingController SearchFieldController = TextEditingController();
   @override
@@ -37,11 +37,18 @@ class _DictScreenState extends State<DictScreen> {
         actions: [
           IconButton(
               onPressed: (() async {
-                await ImportCSVData(context);
-                Fluttertoast.showToast(
+                await ImportCSVData(context).then((value) {
+                  Fluttertoast.showToast(
                     msg: "Import Complete", gravity: ToastGravity.CENTER);
+                });
+                
               }),
               icon: Icon(Icons.keyboard_double_arrow_up_rounded)),
+          IconButton(
+              onPressed: (() async {
+                await DeleteAllVocabDialog(context, widget.deck2dict);
+              }),
+              icon: Icon(Icons.delete_forever_rounded)),
           IconButton(
               onPressed: (() async {
                 final text = await AddVocabDialog(context, widget.deck2dict);
@@ -80,50 +87,50 @@ class _DictScreenState extends State<DictScreen> {
               } else {
                 index = counter - 1;
                 Flashcards data = provider.flashcardlists[index];
-                
-                  return Card(
-                    elevation: 3, //เงาระหว่าง card
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 3, horizontal: 15), //ระยะหว่าง card
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ListTile(
-                            leading: CircleAvatar(
-                              radius: 20,
-                              child: FittedBox(child: Text("${index + 1}")),
-                            ),
-                            title: Text(
-                                "${data.deck} : ${data.dict} - ${data.mean}"),
-                            subtitle: Text("weight : ${data.weight}  date: ${DateFormat("yyyy/MM/dd").format(data.date)}"),
-                            trailing: PopupMenuButton(itemBuilder: (context) {
-                              return [
-                                PopupMenuItem(
-                                  child: Text("Edit"),
-                                  value: 'Edit',
-                                ),
-                                PopupMenuItem(
-                                  child: Text("Delete"),
-                                  value: 'Delete',
-                                )
-                              ];
-                            }, onSelected: (String value) async {
-                              if (value == 'Edit') {
-                                print("Edit ${data.dict}");
-                                await EditVocabDialog(context, widget.deck2dict,
-                                    data.weight, index);
-                              } else if (value == 'Delete') {
-                                print("Delete ${data.dict}");
-                                await provider.delflashcardlists(index);
-                              }
-                            }),
-                            onTap: () {
-                              print(data.date);
-                            },
+
+                return Card(
+                  elevation: 3, //เงาระหว่าง card
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 3, horizontal: 15), //ระยะหว่าง card
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ListTile(
+                          leading: CircleAvatar(
+                            radius: 20,
+                            child: FittedBox(child: Text("${index + 1}")),
                           ),
-                        ]),
-                  );
-                
+                          title: Text(
+                              "${data.deck} : ${data.dict} - ${data.mean}"),
+                          subtitle: Text(
+                              "weight : ${data.weight}  date: ${DateFormat("yyyy/MM/dd").format(data.date)}"),
+                          trailing: PopupMenuButton(itemBuilder: (context) {
+                            return [
+                              PopupMenuItem(
+                                child: Text("Edit"),
+                                value: 'Edit',
+                              ),
+                              PopupMenuItem(
+                                child: Text("Delete"),
+                                value: 'Delete',
+                              )
+                            ];
+                          }, onSelected: (String value) async {
+                            if (value == 'Edit') {
+                              print("Edit ${data.dict}");
+                              await EditVocabDialog(
+                                  context, widget.deck2dict, data);
+                            } else if (value == 'Delete') {
+                              print("Delete ${data.dict}");
+                              await provider.delflashcardlists(data);
+                            }
+                          }),
+                          onTap: () {
+                            print(data.date);
+                          },
+                        ),
+                      ]),
+                );
               }
             });
       }),
