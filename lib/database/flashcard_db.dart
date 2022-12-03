@@ -49,7 +49,10 @@ class FlashVocabDB {
   Future<List<Flashcards>> loadAllData() async {
     var db = await this.openDatabase();
     var store = intMapStoreFactory.store("vocabulary");
-    var snapshot = await store.find(db);
+    var snapshot = await store.find(db,
+        finder: Finder(sortOrders: [
+          SortOrder(Field.key, false)
+        ]));
     List<Flashcards> Vocablist = List<Flashcards>.from(<List<Flashcards>>[]);
     var record;
     for (record in snapshot) {
