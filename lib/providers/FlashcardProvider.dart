@@ -60,6 +60,25 @@ class FlashcardProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future flashcardSearchEngine(String deck, String VocabSearch) async {
+    var vocabdb = await FlashVocabDB(VocabdbName: "vocablist.db");
+    List<Flashcards> allDataList = [];
+    allDataList = await vocabdb.loadAllData();
+    flashcardlists = [];
+    Flashcards vocablist;
+    for (vocablist in allDataList) {
+      if (vocablist.deck == deck && ((vocablist.dict == VocabSearch) || (vocablist.mean == VocabSearch))) {
+        flashcardlists.add(Flashcards(
+            deck: vocablist.deck,
+            dict: vocablist.dict,
+            mean: vocablist.mean,
+            weight: vocablist.weight,
+            date: DateTime.parse(vocablist.date.toString())));
+      }
+    }
+    notifyListeners();
+  }  
+
   List<Deckcards> deckcardlists = [];
 
   void initDeckData() async {

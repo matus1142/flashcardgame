@@ -78,8 +78,12 @@ class _DictScreenState extends State<DictScreen> {
                     controller: SearchFieldController,
                     decoration: InputDecoration(hintText: "Search"),
                     onChanged: (value) {
-                      print(value);
-
+                      if(value == ''){
+                        provider.initVocabData(widget.deck2dict);
+                      }else{
+                        provider.flashcardSearchEngine(widget.deck2dict,value);
+                        //print(value);
+                      }
                       //Add search function here
                     },
                   ),
@@ -101,9 +105,9 @@ class _DictScreenState extends State<DictScreen> {
                             child: FittedBox(child: Text("${index + 1}")),
                           ),
                           title: Text(
-                              "${data.deck} : ${data.dict} - ${data.mean}"),
+                              "${data.dict} - ${data.mean}"),
                           subtitle: Text(
-                              "weight : ${data.weight}  date: ${DateFormat("yyyy/MM/dd").format(data.date)}"),
+                              "${DateFormat("yyyy/MM/dd").format(data.date)}"),
                           trailing: PopupMenuButton(itemBuilder: (context) {
                             return [
                               PopupMenuItem(
