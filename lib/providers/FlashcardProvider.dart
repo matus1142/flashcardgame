@@ -60,29 +60,29 @@ class FlashcardProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  List<Deckcards> deckcardlists = [
-    Deckcards(
-      deck: "JPN/TH",
-      date: DateTime.now(),
-    ),
-    Deckcards(
-      deck: "EN/TH",
-      date: DateTime.now(),
-    ),
-  ];
+  List<Deckcards> deckcardlists = [];
+
+  void initDeckData() async {
+    var deckdb = await FlashDeckDB(DeckdbName: "decklist.db");
+    deckcardlists = await deckdb.loadAllData();
+    notifyListeners();
+  }
 
   Future addDeckcardlists(Deckcards decklist) async {
-    deckcardlists.add(decklist);
-    var deckdb = await FlashDeckDB(DeckdbName: "decklist.db")
-        .openDatabase(); //path: /data/user/0/com.example.flashcardgame/app_flutter/decklist.db
-    print(deckdb);
+    var deckdb = await FlashDeckDB(DeckdbName: "decklist.db");
+     //path: /data/user/0/com.example.flashcardgame/app_flutter/decklist.db
+    await deckdb.InsertData(decklist);
+    deckcardlists = await deckdb.loadAllData();
     notifyListeners();
   }
 
-  Future delDeckcardlists(int index) async {
-    deckcardlists.removeAt(index);
+  Future delDeckcardlists(Deckcards decklist) async {
+    var deckdb = await FlashDeckDB(DeckdbName: "decklist.db");
+    await deckdb.DeleteData(decklist);
+    deckcardlists = await deckdb.loadAllData();
     notifyListeners();
   }
+
 
   Future Editdeckcardlists(Deckcards decklist, int index) async {
     deckcardlists[index] = Deckcards(deck: decklist.deck, date: decklist.date);

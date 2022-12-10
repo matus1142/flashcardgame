@@ -135,7 +135,23 @@ class FlashDeckDB {
     return db;
   }
 
-  Future<int> InsertData(Deckcards decklist) async {
+
+
+  Future<List<Deckcards>> loadAllData() async {
+    var db = await this.openDatabase();
+    var store = intMapStoreFactory.store("deck");
+    var snapshot = await store.find(db);
+    List<Deckcards> Decklist = List<Deckcards>.from(<List<Deckcards>>[]);
+    var record;
+    for (record in snapshot) {
+      Decklist.add(Deckcards(
+          deck: record["deck"],
+          date: DateTime.parse(record["date"])));
+    }
+    return Decklist;
+  }
+
+    Future<int> InsertData(Deckcards decklist) async {
     //database => Store
     var db = await this.openDatabase();
     var store = intMapStoreFactory.store("deck");
@@ -148,4 +164,20 @@ class FlashDeckDB {
     db.close();
     return keyID; //เรียงลำดับจาก 1,2,3,4,...
   }
+
+  Future DeleteData(Deckcards decklist) async {
+    //database => Store
+    var db = await this.openDatabase();
+    var store = intMapStoreFactory.store("deck");
+    var findkey = await store.findKey(db,
+        finder: Finder(
+            filter: Filter.and([
+          Filter.equals('deck', decklist.deck),
+          Filter.equals('date', decklist.date.toIso8601String())
+        ])));
+    var record = await store.record(findkey!);
+    await record.delete(db);
+    db.close();
+  }
+
 }

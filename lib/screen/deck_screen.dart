@@ -18,10 +18,12 @@ class DeckScreen extends StatefulWidget {
 
 class _DeckScreenState extends State<DeckScreen> {
 
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    var provider = Provider.of<FlashcardProvider>(context, listen: false).initDeckData();
     // Provider.of<FlashcardProvider>(context,listen: false).initVocabData();
   }
   @override
@@ -62,7 +64,7 @@ class _DeckScreenState extends State<DeckScreen> {
                             await EditDeckDialog(context, index);
                             //provider.Editflashcardlists(index);
                           } else if (value == 'Delete') {
-                            await provider.delDeckcardlists(index);
+                            await provider.delDeckcardlists(deckcards);
                           }
                         }),
                       onTap: () {
