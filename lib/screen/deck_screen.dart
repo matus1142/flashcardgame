@@ -61,7 +61,8 @@ class _DeckScreenState extends State<DeckScreen> {
                           ];
                         }, onSelected: (String value) async {
                           if (value == 'Edit') {
-                            await EditDeckDialog(context, index);
+                            print(deckcards);
+                            await EditDeckDialog(context, deckcards);
                             //provider.Editflashcardlists(index);
                           } else if (value == 'Delete') {
                             await provider.delDeckcardlists(deckcards);

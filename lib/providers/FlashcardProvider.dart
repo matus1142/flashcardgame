@@ -84,8 +84,11 @@ class FlashcardProvider with ChangeNotifier {
   }
 
 
-  Future Editdeckcardlists(Deckcards decklist, int index) async {
-    deckcardlists[index] = Deckcards(deck: decklist.deck, date: decklist.date);
+  Future Editdeckcardlists(Deckcards oldDeck, Deckcards newDeck) async {
+    var deckdb = await FlashDeckDB(DeckdbName: "decklist.db");
+    await deckdb.EditData(oldDeck,newDeck);
+    deckcardlists = await deckdb.loadAllData();
     notifyListeners();
   }
+
 }

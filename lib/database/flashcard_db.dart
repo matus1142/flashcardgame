@@ -180,4 +180,23 @@ class FlashDeckDB {
     db.close();
   }
 
+  Future EditData(Deckcards oldDeck, Deckcards newDeck) async {
+    //database => Store
+    var db = await this.openDatabase();
+    var store = intMapStoreFactory.store("deck");
+    var findkey = await store.findKey(db,
+        finder: Finder(
+            filter: Filter.and([
+          Filter.equals('deck', oldDeck.deck),
+          Filter.equals('date', oldDeck.date.toIso8601String())
+        ])));
+    var record = await store.record(findkey!);
+    await record.update(db, {
+      'deck': newDeck.deck,
+      'date': newDeck.date.toIso8601String()
+    });
+    // await store.delete(db);
+    db.close();
+  }
+
 }

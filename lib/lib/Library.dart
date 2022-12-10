@@ -225,7 +225,7 @@ Future<String?> AddDeckDialog(BuildContext context) {
       });
 }
 
-Future<void> EditDeckDialog(BuildContext context, int index) {
+Future<void> EditDeckDialog(BuildContext context, Deckcards oldDeck) {
   TextEditingController DeckFieldController = TextEditingController();
   return showDialog<String>(
       context: context,
@@ -270,7 +270,7 @@ Future<void> EditDeckDialog(BuildContext context, int index) {
                     Provider.of<FlashcardProvider>(context, listen: false);
                 if (deckText != "") {
                   //Check emptry
-                  provider.Editdeckcardlists(decklist, index);
+                  provider.Editdeckcardlists(oldDeck, decklist);
                 }
                 Navigator.pop(context);
               },
