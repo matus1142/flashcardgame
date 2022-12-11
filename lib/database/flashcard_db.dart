@@ -50,9 +50,7 @@ class FlashVocabDB {
     var db = await this.openDatabase();
     var store = intMapStoreFactory.store("vocabulary");
     var snapshot = await store.find(db,
-        finder: Finder(sortOrders: [
-          SortOrder(Field.key, false)
-        ]));
+        finder: Finder(sortOrders: [SortOrder(Field.key, false)]));
     List<Flashcards> Vocablist = List<Flashcards>.from(<List<Flashcards>>[]);
     var record;
     for (record in snapshot) {
@@ -114,6 +112,31 @@ class FlashVocabDB {
     // await store.delete(db);
     db.close();
   }
+
+  Future deckChangeName(Deckcards oldDeck, Deckcards newDeck) async {
+    //database => Store
+    var Vocabdb = await this.openDatabase();
+    var Vocabstore = intMapStoreFactory.store("vocabulary");
+
+    int findkeyStatus = 0;
+    while (findkeyStatus == 0) {
+      var findkey = await Vocabstore.findKey(Vocabdb,
+          finder: Finder(
+              filter: Filter.and([
+            Filter.equals('deck', oldDeck.deck),
+          ])));
+      if (findkey == null) {
+        findkeyStatus = 1;
+      } else {
+        var record = await Vocabstore.record(findkey!);
+        await record.update(Vocabdb, {
+          'deck': newDeck.deck,
+        });
+      }
+    }
+    // await store.delete(db);
+    Vocabdb.close();
+  }
 }
 
 ///*************************************************** Deck ******************************************************************///
@@ -135,8 +158,6 @@ class FlashDeckDB {
     return db;
   }
 
-
-
   Future<List<Deckcards>> loadAllData() async {
     var db = await this.openDatabase();
     var store = intMapStoreFactory.store("deck");
@@ -145,22 +166,30 @@ class FlashDeckDB {
     var record;
     for (record in snapshot) {
       Decklist.add(Deckcards(
-          deck: record["deck"],
-          date: DateTime.parse(record["date"])));
+          deck: record["deck"], date: DateTime.parse(record["date"])));
     }
     return Decklist;
   }
 
-    Future<int> InsertData(Deckcards decklist) async {
+  Future<int> InsertData(Deckcards decklist) async {
     //database => Store
     var db = await this.openDatabase();
     var store = intMapStoreFactory.store("deck");
+    int keyID = 0;
 
-    // save statement as json
-    var keyID = store.add(db, {
-      "deck": decklist.deck,
-      "date": decklist.date.toIso8601String(), //standard date time format
-    });
+    var findkey = await store.findKey(db,
+        finder: Finder(
+            filter: Filter.and([
+          Filter.equals('deck', decklist.deck),
+        ])));
+    if (findkey == null) {
+      // save statement as json
+      var keyID = store.add(db, {
+        "deck": decklist.deck,
+        "date": decklist.date.toIso8601String(), //standard date time format
+      });
+    }
+
     db.close();
     return keyID; //เรียงลำดับจาก 1,2,3,4,...
   }
@@ -180,23 +209,31 @@ class FlashDeckDB {
     db.close();
   }
 
-  Future EditData(Deckcards oldDeck, Deckcards newDeck) async {
+  Future<int> EditData(Deckcards oldDeck, Deckcards newDeck) async {
     //database => Store
     var db = await this.openDatabase();
     var store = intMapStoreFactory.store("deck");
-    var findkey = await store.findKey(db,
+    var deckChangeNameStatus = 0;
+    var findkeyDuplicate = await store.findKey(db,
         finder: Finder(
             filter: Filter.and([
-          Filter.equals('deck', oldDeck.deck),
-          Filter.equals('date', oldDeck.date.toIso8601String())
+          Filter.equals('deck', newDeck.deck),
         ])));
-    var record = await store.record(findkey!);
-    await record.update(db, {
-      'deck': newDeck.deck,
-      'date': newDeck.date.toIso8601String()
-    });
-    // await store.delete(db);
+    if (findkeyDuplicate == null) {
+      var findkey = await store.findKey(db,
+          finder: Finder(
+              filter: Filter.and([
+            Filter.equals('deck', oldDeck.deck),
+            Filter.equals('date', oldDeck.date.toIso8601String())
+          ])));
+      var record = await store.record(findkey!);
+      await record.update(
+          db, {'deck': newDeck.deck, 'date': newDeck.date.toIso8601String()});
+      deckChangeNameStatus = 1;
+    }else{
+      deckChangeNameStatus = 0;
+    }
     db.close();
+    return deckChangeNameStatus;
   }
-
 }

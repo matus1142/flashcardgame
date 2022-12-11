@@ -67,7 +67,9 @@ class FlashcardProvider with ChangeNotifier {
     flashcardlists = [];
     Flashcards vocablist;
     for (vocablist in allDataList) {
-      if (vocablist.deck == deck && ((vocablist.dict == VocabSearch) || (vocablist.mean == VocabSearch))) {
+      if (vocablist.deck == deck &&
+          ((vocablist.dict == VocabSearch) ||
+              (vocablist.mean == VocabSearch))) {
         flashcardlists.add(Flashcards(
             deck: vocablist.deck,
             dict: vocablist.dict,
@@ -77,7 +79,7 @@ class FlashcardProvider with ChangeNotifier {
       }
     }
     notifyListeners();
-  }  
+  }
 
   List<Deckcards> deckcardlists = [];
 
@@ -89,7 +91,7 @@ class FlashcardProvider with ChangeNotifier {
 
   Future addDeckcardlists(Deckcards decklist) async {
     var deckdb = await FlashDeckDB(DeckdbName: "decklist.db");
-     //path: /data/user/0/com.example.flashcardgame/app_flutter/decklist.db
+    //path: /data/user/0/com.example.flashcardgame/app_flutter/decklist.db
     await deckdb.InsertData(decklist);
     deckcardlists = await deckdb.loadAllData();
     notifyListeners();
@@ -99,15 +101,18 @@ class FlashcardProvider with ChangeNotifier {
     var deckdb = await FlashDeckDB(DeckdbName: "decklist.db");
     await deckdb.DeleteData(decklist);
     deckcardlists = await deckdb.loadAllData();
+    await delAllflashcardlists(decklist.deck);
     notifyListeners();
   }
-
 
   Future Editdeckcardlists(Deckcards oldDeck, Deckcards newDeck) async {
     var deckdb = await FlashDeckDB(DeckdbName: "decklist.db");
-    await deckdb.EditData(oldDeck,newDeck);
-    deckcardlists = await deckdb.loadAllData();
+    var deckChangeNameStatus = await deckdb.EditData(oldDeck, newDeck);
+    if (deckChangeNameStatus == 1) {
+      deckcardlists = await deckdb.loadAllData();
+      var vocabdb = await FlashVocabDB(VocabdbName: "vocablist.db");
+      await vocabdb.deckChangeName(oldDeck, newDeck);
+    } else {}
     notifyListeners();
   }
-
 }

@@ -262,7 +262,7 @@ Future<void> EditDeckDialog(BuildContext context, Deckcards oldDeck) {
               style: TextButton.styleFrom(
                   foregroundColor: Colors.white, backgroundColor: Colors.green),
               child: Text("OK"),
-              onPressed: () {
+              onPressed: () async {
                 var deckText = DeckFieldController.value.text;
                 Deckcards decklist =
                     Deckcards(deck: deckText, date: DateTime.now());
@@ -270,9 +270,38 @@ Future<void> EditDeckDialog(BuildContext context, Deckcards oldDeck) {
                     Provider.of<FlashcardProvider>(context, listen: false);
                 if (deckText != "") {
                   //Check emptry
-                  provider.Editdeckcardlists(oldDeck, decklist);
+                  // Navigator.pop(context);
+                  showDialog(
+                      // The user CANNOT close this dialog  by pressing outsite it
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (_) {
+                        return Dialog(
+                          // The background color
+                          backgroundColor: Colors.white,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: const [
+                                // The loading indicator
+                                CircularProgressIndicator(),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                // Some text
+                                Text('Loading...')
+                              ],
+                            ),
+                          ),
+                        );
+                      });
+                  await provider.Editdeckcardlists(oldDeck, decklist).then((value) {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  });
+                  
                 }
-                Navigator.pop(context);
               },
             )
           ],
